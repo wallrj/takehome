@@ -28,6 +28,11 @@
      :status (if (:success body) 200 500)
      :body body}))
 
+(defn greet
+  "Says hello!"
+  [nickname]
+  {:status 200 :body (format "Hello %s!\n" nickname)})
+
 (defroutes routes
 
   (GET "/healthcheck"
@@ -35,6 +40,9 @@
 
   (GET "/ping"
        [] "pong")
+
+  (GET "/hello"
+       [nickname] (greet nickname))
 
   (route/not-found (error-response "Resource not found" 404)))
 
