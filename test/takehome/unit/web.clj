@@ -41,6 +41,6 @@
          (get-in resp [:body :name]) => "takehome"))
 
  (fact "Hello returns OK"
-       (let [resp (request :get "/hello" {:nickname "world"})]
+       (let [resp (request :get "/hello" {:params {:nickname "world"}})]
          (:status resp) => 200
          (get-in resp [:body]) => "Hello world!\n")))
