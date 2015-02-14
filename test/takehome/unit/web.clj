@@ -38,4 +38,9 @@
  (fact "Healthcheck returns OK"
        (let [resp (request :get "/healthcheck")]
          (:status resp) => 200
-         (get-in resp [:body :name]) => "takehome")))
+         (get-in resp [:body :name]) => "takehome"))
+
+ (fact "Hello returns OK"
+       (let [resp (request :get "/hello" {:nickname "world"})]
+         (:status resp) => 200
+         (get-in resp [:body]) => "Hello world!\n")))
