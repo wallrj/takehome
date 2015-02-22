@@ -61,4 +61,10 @@
        (let [resp (request :post "/kittens_and_puppies" {:params {:message "http://cuteoverload.files.wordpress.com/2014/10/unnamed23.jpg?w=750&h=1000"}})]
          (:status resp) => 404))
 
+ (fact "Retrieve the next message from a topic"
+       (empty_messages)
+       (let [resp (request :get "/kittens_and_puppies/alice")]
+         (:status resp) => 200
+         (get-in resp [:body :name]) => "foo"))
+
 )
