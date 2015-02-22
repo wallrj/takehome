@@ -15,6 +15,23 @@
              [format-response :refer [wrap-json-response]]
              [params :refer [wrap-params]]]))
 
+(require '[clojure.java.jdbc.deprecated :as sql])
+
+(def db-config
+    {:classname "org.h2.Driver"
+     :subprotocol "h2"
+     :subname "/tmp/takehome"})
+
+
+(sql/with-connection db-config
+  (try (sql/drop-table :message)
+       (catch org.h2.jdbc.JdbcBatchUpdateException ex nil))
+
+  (sql/create-table :message
+    [:user "varchar(256) primary key"]
+    [:topic "varchar(256)"]
+    [:message "varchar(256)"]))
+
 (def version
   (setup/version "takehome"))
 
@@ -37,7 +54,12 @@
 (defn subscribe
   "Subscribe username to topic"
   [topic username]
-  {:status 200 :body (format "SUBSCRIBED\n")})
+  (sql/with-connection db-config
+    (sql/insert-records
+     :message
+     {:topic topic :user username :message "SUBSCRIBED"})
+
+  {:status 200 :body (format "SUBSCRIBED\n")}))
 
 
 (defn unsubscribe
