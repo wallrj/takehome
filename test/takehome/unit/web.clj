@@ -78,4 +78,10 @@
        (db/subscribe "kittens_and_puppies" "alice")
        (let [resp (request :get "/kittens_and_puppies/alice")]
          (:status resp) => 204
+         (get-in resp [:body]) => ""))
+
+ (fact "Retrieve the next message from unsubscribed topic"
+       (db/empty_messages)
+       (let [resp (request :get "/kittens_and_puppies/alice")]
+         (:status resp) => 404
          (get-in resp [:body]) => "")))
