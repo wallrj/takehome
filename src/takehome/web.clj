@@ -33,6 +33,19 @@
   [nickname]
   {:status 200 :body (format "Hello %s!\n" nickname)})
 
+
+(defn subscribe
+  "Subscribe username to topic"
+  [topic username]
+  {:status 200 :body (format "SUBSCRIBED\n")})
+
+
+(defn unsubscribe
+  "Unsubscribe username from topic"
+  [topic username]
+  {:status 200 :body (format "UNSUBSCRIBED\n")})
+
+
 (defroutes routes
 
   (GET "/healthcheck"
@@ -43,6 +56,12 @@
 
   (GET "/hello"
        [nickname] (greet nickname))
+
+  (POST "/:topic/:username"
+       [topic username] (subscribe topic username))
+
+  (DELETE "/:topic/:username"
+       [topic username] (unsubscribe topic username))
 
   (route/not-found (error-response "Resource not found" 404)))
 
