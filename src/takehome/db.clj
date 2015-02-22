@@ -36,7 +36,7 @@
   (sql/with-connection db-config
     (sql/with-query-results results
      ["select * from message where message = ? and topic = ? and user = ? order by id desc limit 1" "SUBSCRIBE" topic user]
-     (empty? results))))
+     (not (empty? (do results))))))
 
 (defn unsubscribe [topic user]
   (sql/with-connection db-config
@@ -50,7 +50,7 @@
   (sql/with-connection db-config
     (sql/with-query-results results
      ["select topic from message where user = ?" user]
-     (results))))
+     (do results))))
 
 (defn message_push [topic user message]
   (sql/with-connection db-config
@@ -64,6 +64,6 @@
   (sql/with-connection db-config
     (sql/with-query-results results
      ["select * from message where message != ? and user = ? and topic = ? order by id desc limit 1" "SUBSCRIBE" user topic]
-     (let [result (first results)]
+     (let [result (first (do results))]
        (sql/delete-rows "message" ["id = ?" (:id result)])
        result))))

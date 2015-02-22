@@ -55,7 +55,7 @@
   "Get next message for user in topic"
   [topic user]
   (let [message (db/message_pop topic user)]
-    {:status (if (db/subscribed? topic user) 404 (if (empty? message) 204 200))
+    {:status (if (db/subscribed? topic user) (if (empty? message) 204 200) 404)
      :body (format "%s" (:message message ""))}))
 
 (defroutes routes
