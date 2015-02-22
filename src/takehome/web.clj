@@ -48,7 +48,8 @@
 (defn unsubscribe
   "Unsubscribe user from topic"
   [topic user]
-  {:status 200 :body (format "UNSUBSCRIBED\n")})
+  (let [result (db/unsubscribe topic user)]
+    {:status (if (> result 0) 200 404) :body ""}))
 
 (defn message
   "Get next message for user in topic"

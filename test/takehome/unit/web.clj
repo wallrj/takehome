@@ -51,10 +51,13 @@
          (:status resp) => 200))
 
  (fact "Unsubscribe from topic returns OK"
+       (db/empty_messages)
+       (db/subscribe "kittens_and_puppies" "alice")
        (let [resp (request :delete "/kittens_and_puppies/alice")]
          (:status resp) => 200))
 
  (fact "Unsubscribe from unsubscribed topic returns NOT_FOUND"
+       (db/empty_messages)
        (let [resp (request :delete "/kittens_and_puppies/bob")]
          (:status resp) => 404))
 
