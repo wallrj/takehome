@@ -53,7 +53,8 @@
 (defn message
   "Get next message for user in topic"
   [topic user]
-  {:status 200 :body (format "%s" (db/message_pop topic user))})
+  (let [message (db/message_pop topic user)]
+    {:status (if (empty? message) 204 200) :body (format "%s" (:message message ""))}))
 
 (defroutes routes
 

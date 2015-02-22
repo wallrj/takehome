@@ -68,4 +68,11 @@
        (db/message_push "kittens_and_puppies" "alice" "first message")
        (let [resp (request :get "/kittens_and_puppies/alice")]
          (:status resp) => 200
-         (get-in resp [:body]) => "first message")))
+         (get-in resp [:body]) => "first message"))
+
+ (fact "Retrieve the next message from empty topic"
+       (db/empty_messages)
+       (db/subscribe "kittens_and_puppies" "alice")
+       (let [resp (request :get "/kittens_and_puppies/alice")]
+         (:status resp) => 204
+         (get-in resp [:body]) => "")))
