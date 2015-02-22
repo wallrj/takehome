@@ -43,4 +43,22 @@
  (fact "Hello returns OK"
        (let [resp (request :get "/hello" {:params {:nickname "world"}})]
          (:status resp) => 200
-         (get-in resp [:body]) => "Hello world!\n")))
+         (get-in resp [:body]) => "Hello world!\n"))
+
+ (fact "Subscribe to topic returns OK"
+       (let [resp (request :post "/kittens_and_puppies/alice")]
+         (:status resp) => 200))
+
+ (fact "Unsubscribe from topic returns OK"
+       (let [resp (request :delete "/kittens_and_puppies/alice")]
+         (:status resp) => 200))
+
+ (fact "Unsubscribe from unsubscribed topic returns NOT_FOUND"
+       (let [resp (request :delete "/kittens_and_puppies/bob")]
+         (:status resp) => 404))
+
+ (fact "Publish to topic returns OK"
+       (let [resp (request :post "/kittens_and_puppies" {:params {:message "http://cuteoverload.files.wordpress.com/2014/10/unnamed23.jpg?w=750&h=1000"}})]
+         (:status resp) => 404))
+
+)
