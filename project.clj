@@ -13,7 +13,9 @@
                  [net.logstash.logback/logstash-logback-encoder "3.2"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [ring-middleware-format "0.4.0"]]
+                 [ring-middleware-format "0.4.0"]
+                 [org.clojure/java.jdbc "0.3.2"]
+                 [com.h2database/h2 "1.3.170"]]
 
   :exclusions [commons-logging
                log4j

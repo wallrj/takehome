@@ -1,5 +1,6 @@
 (ns takehome.unit.web
   (:require [takehome.web :refer :all]
+            [takehome.db :as db]
             [cheshire.core :as json]
             [midje.sweet :refer :all])
   (:import [java.io ByteArrayInputStream InputStream]))
@@ -62,9 +63,9 @@
          (:status resp) => 404))
 
  (fact "Retrieve the next message from a topic"
-       (empty_messages)
+       (db/empty_messages)
+       (db/subscribe "kittens_and_puppies" "alice")
+       (db/message_push "kittens_and_puppies" "alice" "first message")
        (let [resp (request :get "/kittens_and_puppies/alice")]
          (:status resp) => 200
-         (get-in resp [:body :name]) => "foo"))
-
-)
+         (get-in resp [:body]) => "first message")))

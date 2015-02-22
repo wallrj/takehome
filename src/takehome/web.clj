@@ -13,24 +13,8 @@
             [ring.middleware
              [format-params :refer [wrap-json-kw-params]]
              [format-response :refer [wrap-json-response]]
-             [params :refer [wrap-params]]]))
-
-(require '[clojure.java.jdbc.deprecated :as sql])
-
-(def db-config
-    {:classname "org.h2.Driver"
-     :subprotocol "h2"
-     :subname "/tmp/takehome"})
-
-
-(sql/with-connection db-config
-  (try (sql/drop-table :message)
-       (catch org.h2.jdbc.JdbcBatchUpdateException ex nil))
-
-  (sql/create-table :message
-    [:user "varchar(256) primary key"]
-    [:topic "varchar(256)"]
-    [:message "varchar(256)"]))
+             [params :refer [wrap-params]]]
+            [takehome.db :as db]))
 
 (def version
   (setup/version "takehome"))
@@ -50,23 +34,26 @@
   [nickname]
   {:status 200 :body (format "Hello %s!\n" nickname)})
 
+(defn topics
+  "Return topics to which username is subscribed."
+  [user]
+  {:status 200 :body (format "SUBSCRIBED\n")})
 
 (defn subscribe
-  "Subscribe username to topic"
-  [topic username]
-  (sql/with-connection db-config
-    (sql/insert-records
-     :message
-     {:topic topic :user username :message "SUBSCRIBED"})
-
-  {:status 200 :body (format "SUBSCRIBED\n")}))
-
+  "Subscribe user to topic"
+  [topic user]
+  (db/message_push topic user "SUBSCRIBED")
+  {:status 200 :body (format "SUBSCRIBED\n")})
 
 (defn unsubscribe
-  "Unsubscribe username from topic"
-  [topic username]
+  "Unsubscribe user from topic"
+  [topic user]
   {:status 200 :body (format "UNSUBSCRIBED\n")})
 
+(defn message
+  "Get next message for user in topic"
+  [topic user]
+  {:status 200 :body (format "%s" (db/message_pop topic user))})
 
 (defroutes routes
 
@@ -79,11 +66,14 @@
   (GET "/hello"
        [nickname] (greet nickname))
 
-  (POST "/:topic/:username"
-       [topic username] (subscribe topic username))
+  (POST "/:topic/:user"
+       [topic user] (subscribe topic user))
 
-  (DELETE "/:topic/:username"
-       [topic username] (unsubscribe topic username))
+  (DELETE "/:topic/:user"
+       [topic user] (unsubscribe topic user))
+
+  (GET "/:topic/:user"
+       [topic user] (message topic user))
 
   (route/not-found (error-response "Resource not found" 404)))
 
